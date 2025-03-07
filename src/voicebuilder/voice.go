@@ -61,7 +61,7 @@ func ConvertToMp3_EdgeTTS(Message, VoiceName, FileName string) error {
 
 	connOptions := []edge_tts.CommunicateOption{
 		edge_tts.SetVoice(VoiceName),
-		edge_tts.SetRate("+0%"),
+		edge_tts.SetRate("+20%"),
 		edge_tts.SetVolume("+0%"),
 		edge_tts.SetPitch("+0Hz"),
 		edge_tts.SetReceiveTimeout(20), //20秒 timeout
@@ -220,6 +220,7 @@ func PlayVoiceSample() {
 
 func BuildSampleVoice() {
 	player := mp3player.NewMP3Player()
+	defer player.Close()
 
 	voices := []string{"nova", "shimmer", "echo", "fable", "alloy", "onyx"}
 	message := "This is a test voice, glad to serve you. 這是測試語音，很高興能為您服務，我是。"

@@ -12,7 +12,7 @@ type RandomNameSelector struct {
 	UsedIndexes map[int]struct{}
 }
 
-func NewRandomBotNameSelector(objArr []model.BotSetting, enableVoide bool) *RandomNameSelector {
+func NewRandomBotNameSelector(objArr []model.BotSetting) *RandomNameSelector {
 	var items []string
 	for _, bot := range JsonBotsSetting {
 		items = append(items, bot.Name)
@@ -27,6 +27,7 @@ func (rs *RandomNameSelector) GetRandom() (string, bool) {
 	if len(rs.UsedIndexes) == len(rs.Items) {
 		// 如果所有項目都已使用，重置
 		rs.UsedIndexes = make(map[int]struct{})
+		return "", false
 	}
 
 	rand.New(rand.NewSource(time.Now().UnixNano()))

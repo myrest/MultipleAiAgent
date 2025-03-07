@@ -2,10 +2,10 @@
     "OPENAI_API_KEY": "",
     "OPENAI_BASE_URL": "http://127.0.0.1:11434/",
     "MaxResponseLength": 1000,
-    "BotSettingFileName": "storybotsetting.json",
-    "AiSource": "OllamaStory",
-    "ModelName" :"llama3.1",
-    "Sequential": "Sequential",
-    "EnableVoice": true,
+    "BotSettingFileName": "botsettingdiscuess.json",
+    "AiSource": "ollama",
+    "ModelName" :"deepseek-r1:14b",
+    "Sequential": "Random",
+    "EnableVoice": false,
     "UseEdgeTTS": true
 }

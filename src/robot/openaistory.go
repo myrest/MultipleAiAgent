@@ -8,7 +8,6 @@ import (
 	"RestChatBot/src/voicebuilder"
 	"context"
 	"fmt"
-	"strconv"
 
 	"github.com/tmc/langchaingo/llms"
 	"github.com/tmc/langchaingo/llms/openai"
@@ -29,40 +28,20 @@ func OpenAIStoryStart(ctx context.Context) {
 
 	var subject string //使用者先提一個問題
 	subject, shouldExist := util.GetUserInput("您的故事主題是？")
+	util.PutLog_File(fmt.Sprintln(subject))
 	if shouldExist {
 		return
-	}
-
-	StoryRound, shouldExist := util.GetUserInput("要說幾輪次呢？")
-	if shouldExist {
-		return
-	}
-	if StoryRound == "" {
-		StoryRound = "1"
 	}
 
 	//先將題目sync給所有的bots
 	for _, botset := range AllBots {
 		botset.Append("", subject) //因為Name為空，比對不到，所以都會變成HumanMessage
 	}
-
-	totalRound, err := strconv.Atoi(StoryRound)
-	if err != nil {
-		totalRound = 1
-	}
-	CurrentRound := 1
-	for {
-		//開始回答
-		OpenAIStory(ctx, llm, config.EnableVoice, CurrentRound)
-		if CurrentRound < totalRound {
-			init_pross()
-			CurrentRound++
-			continue
-		}
-	}
+	//開始回答
+	OpenAIStory(ctx, llm, config.EnableVoice)
 }
 
-func OpenAIStory(ctx context.Context, llm *openai.LLM, enableVoide bool, startnum int) {
+func OpenAIStory(ctx context.Context, llm *openai.LLM, enableVoide bool) {
 	//依序取出Bot們
 	player := mp3player.NewMP3Player()
 	defer player.Close()
@@ -70,11 +49,11 @@ func OpenAIStory(ctx context.Context, llm *openai.LLM, enableVoide bool, startnu
 	for i, botsetName := range JsonBotsSetting {
 		message := createOpenAIResponseForStory(ctx, llm, botsetName.Name, maxLength)
 		if enableVoide {
-			filename := fmt.Sprintf("故事-%d.mp3", (startnum*10)+i)
+			filename := fmt.Sprintf("故事-%d.mp3", i)
 			i += 1
 			err := voicebuilder.ConvertToMp3(message, botsetName.Voice, filename)
 			if err != nil {
-				panic("轉MP3錯誤。")
+				panic(fmt.Sprintln("\nVoice:[]", botsetName.Voice, "] 轉MP3錯誤。\n", err.Error()))
 			}
 			player.Add(filename, nil, nil)
 		}
@@ -88,16 +67,18 @@ func createOpenAIResponseForStory(ctx context.Context, llm *openai.LLM, BotName 
 		llms.WithTemperature(0.8),
 		llms.WithMaxTokens(maxLength),
 		llms.WithStreamingFunc(func(ctx context.Context, chunk []byte) error {
-			fmt.Print(string(chunk))
+			util.PutLog_Console(string(chunk))
 			return nil
 		}),
 	)
 	if err != nil {
 		panic(err.Error())
 	}
+	util.PutLog_File(completion.Choices[0].Content)
+	util.SaveLog()
 	//將botset的回答，sync到所有的bots
 	for _, makeupBotAnswer := range AllBots {
-		makeupBotAnswer.Append(botset.Name, completion.Choices[0].Content)
+		makeupBotAnswer.Append(botset.Name, util.RemoveThinkTags(completion.Choices[0].Content))
 	}
 	return completion.Choices[0].Content
 }
