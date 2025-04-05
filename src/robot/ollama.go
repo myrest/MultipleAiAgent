@@ -86,14 +86,14 @@ func OllamaStart(ctx context.Context) {
 }
 
 func OllamaConclusion(ctx context.Context, llm *ollama.LLM) {
-	maxLength := ctx.Value(model.ContextMaxResponseLength).(int)
+	//maxLength := ctx.Value(model.ContextDefaultMaxResponseLength).(int)
 	bot := AllBots["總結"]
 	if bot != nil {
 		fmt.Printf("\x1b[%dm%s\x1b[0m\n", model.ColorPrompt, "總結：")
 		completion, err := llm.GenerateContent(ctx, bot.History,
 			llms.WithTemperature(0.8),
 			//llms.WithMaxLength(maxLength),
-			llms.WithMaxTokens(maxLength),
+			llms.WithMaxTokens(bot.BotMaxResponseLength),
 			llms.WithStreamingFunc(func(ctx context.Context, chunk []byte) error {
 				util.PutLog_Console(string(chunk))
 				return nil
@@ -131,7 +131,7 @@ func OllamaRandomChat(ctx context.Context, llm *ollama.LLM) {
 }
 
 func createOllamaResponse(ctx context.Context, llm *ollama.LLM, BotName string) {
-	maxLength := ctx.Value(model.ContextMaxResponseLength).(int)
+	//maxLength := ctx.Value(model.ContextDefaultMaxResponseLength).(int)
 	botset := AllBots[BotName]
 	if botset.Name == "總結" { //排除掉特殊角色
 		return
@@ -141,7 +141,7 @@ func createOllamaResponse(ctx context.Context, llm *ollama.LLM, BotName string) 
 	completion, err := llm.GenerateContent(ctx, botset.History,
 		llms.WithTemperature(0.8),
 		//llms.WithMaxLength(maxLength),
-		llms.WithMaxTokens(maxLength),
+		llms.WithMaxTokens(botset.BotMaxResponseLength),
 		llms.WithStreamingFunc(func(ctx context.Context, chunk []byte) error {
 			util.PutLog_Console(string(chunk))
 			return nil
@@ -155,7 +155,8 @@ func createOllamaResponse(ctx context.Context, llm *ollama.LLM, BotName string) 
 
 	if systemConfig.EnableVoice {
 		filename := fmt.Sprintf("%d-%s.mp3", time.Now().UnixNano(), botset.Name)
-		err := voicebuilder.ConvertToMp3(completion.Choices[0].Content, botset.Voice, filename)
+		msg := util.RemoveThinkTags(completion.Choices[0].Content)
+		err := voicebuilder.ConvertToMp3(msg, botset.Voice, filename)
 		if err != nil {
 			panic(fmt.Sprintln("\nVoice:[]", botset.Voice, "] 轉MP3錯誤。\n", err.Error()))
 		}

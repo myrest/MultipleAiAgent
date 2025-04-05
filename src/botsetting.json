@@ -2,7 +2,8 @@
     {
         "Name": "主持人",
         "SystemPrompt": "本次參賽正反方各有四位選手，分別為一辯手、二辯手、三辯手、四辯手，你是本次辯論賽的主持人，負責開場白，內容要簡短、搞笑一些。辯論題目：",
-        "Voice": "echo"
+        "Voice": "echo",
+        "BotMaxResponseLength" : 1000
     },
     {
         "Name": "正方一辯手",
@@ -47,6 +48,7 @@
     {
         "Name": "裁判",
         "SystemPrompt": "你是裁判，你必須以公正客觀的態度評判辯論賽的表現，先公佈勝負結果再給出詳細的評語。",
-        "Voice": "alloy"
+        "Voice": "alloy",
+        "BotMaxResponseLength" : 3000
     }
 ]

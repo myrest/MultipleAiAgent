@@ -2,7 +2,6 @@ package robot
 
 import (
 	"RestChatBot/src/config"
-	"RestChatBot/src/model"
 	"RestChatBot/src/mp3player"
 	"RestChatBot/src/util"
 	"RestChatBot/src/voicebuilder"
@@ -44,13 +43,13 @@ func OllamaStory(ctx context.Context, llm *ollama.LLM, enableVoide bool) {
 	//依序取出Bot們
 	player := mp3player.NewMP3Player()
 	defer player.Close()
-	maxLength := ctx.Value(model.ContextMaxResponseLength).(int)
+	//maxLength := ctx.Value(model.ContextDefaultMaxResponseLength).(int)
 	for i, botsetName := range JsonBotsSetting {
-		message := createOllamaResponseForStory(ctx, llm, botsetName.Name, maxLength)
+		message := createOllamaResponseForStory(ctx, llm, botsetName.Name, botsetName.BotMaxResponseLength)
 		if enableVoide {
 			filename := fmt.Sprintf("故事-%d.mp3", i)
 			i += 1
-			err := voicebuilder.ConvertToMp3(message, botsetName.Voice, filename)
+			err := voicebuilder.ConvertToMp3(util.RemoveThinkTags(message), botsetName.Voice, filename)
 			if err != nil {
 				panic(fmt.Sprintln("\nVoice:[]", botsetName.Voice, "] 轉MP3錯誤。\n", err.Error()))
 			}

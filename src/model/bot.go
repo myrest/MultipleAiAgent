@@ -5,10 +5,11 @@ import (
 )
 
 type BotSetting struct {
-	Name         string
-	SystemPrompt string
-	Voice        string
-	History      []llms.MessageContent
+	Name                 string
+	SystemPrompt         string
+	Voice                string
+	BotMaxResponseLength int
+	History              []llms.MessageContent
 }
 
 func (mh *BotSetting) Append(name, message string) {

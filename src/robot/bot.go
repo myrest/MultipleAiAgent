@@ -41,6 +41,9 @@ func init_pross() {
 	// 預設好角色設定
 	for _, bot := range JsonBotsSetting {
 		bot.History = append(bot.History, llms.TextParts(llms.ChatMessageTypeSystem, bot.SystemPrompt))
+		if bot.BotMaxResponseLength == 0 {
+			bot.BotMaxResponseLength = settings.DefaultMaxResponseLength
+		}
 		AllBots[bot.Name] = &bot
 	}
 }

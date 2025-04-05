@@ -2,7 +2,6 @@ package main
 
 import (
 	"RestChatBot/src/config"
-	"RestChatBot/src/model"
 	"RestChatBot/src/robot"
 	"context"
 	"fmt"
@@ -12,7 +11,7 @@ import (
 func main() {
 	config := config.GetConfig()
 	ctx := context.Background()
-	ctx = context.WithValue(ctx, model.ContextMaxResponseLength, config.MaxResponseLength)
+	//ctx = context.WithValue(ctx, model.ContextDefaultMaxResponseLength, config.DefaultMaxResponseLength)
 
 	switch strings.ToLower(config.AiSource) {
 	case "openai":

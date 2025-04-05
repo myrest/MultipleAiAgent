@@ -10,8 +10,8 @@
 - **OPENAI_BASE_URL**: 
   - 根據你所使用的 AI 來源，資料會傳送到此位置。
 
-- **MaxResponseLength**: 
-  - 限制 AI 回答的內容長度。
+- **DefaultMaxResponseLength**: 
+  - 預設限制 AI 回答的內容長度。
 
 - **BotSettingFileName**: 
   - AI 機器人設定檔。預設包含兩個範例檔案：
@@ -53,6 +53,10 @@
 
 - **SystemPrompt**: 
   - 用於 System prompt 的提示語。
+
+- **BotMaxResponseLength**: 
+  - 限制 AI 回答的內容長度。
+  - 若未設定或其實為0，將參考系統設定中的DefaultMaxResponseLength值。
 
 - **Voice**: 
   - Speech 聲音名稱：
